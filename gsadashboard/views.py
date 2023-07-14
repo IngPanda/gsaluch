@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
-def index(request):
+def home(request):
     title = 'Luch Gsa Project'
     return render(request, 'common/index.html', {
         'title': title
