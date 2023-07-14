@@ -81,7 +81,7 @@ def signin(request):
         user = authenticate(
             request, username=request.POST['username'], password=request.POST['password'])
         if user is None:
-            return render(request, 'signin.html', { "error": "Username or password is incorrect."})
+            return render(request, 'common/login.html', { "error": "Username or password is incorrect."})
 
         login(request, user)
         return redirect('listRfqs')
