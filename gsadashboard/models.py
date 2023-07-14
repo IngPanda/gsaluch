@@ -51,7 +51,6 @@ class RFQModel(models.Model):
     submitted = models.BooleanField()
     saved = models.BooleanField()
     openRFC = models.BooleanField()
-    account = models.ForeignKey(Account, on_delete = models.PROTECT)
     userOwner = models.ForeignKey(UserOwner, on_delete = models.PROTECT)
 
     def __str__(self):
