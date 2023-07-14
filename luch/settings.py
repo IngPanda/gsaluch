@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 #SECRET_KEY = "django-insecure-g*hy!rhe-tgb#9*@7pw*+0t9vpnpl&bwmj2k#+e85--dhb_kfo"
 
 # SECURITY WARNING: don"t run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -83,7 +83,7 @@ WSGI_APPLICATION = "luch.wsgi.application"
 
 DATABASES = {
         'default': dj_database_url.config(             
-            default='postgresql://postgres:postgres@localhost:5432/mysite',        
+            default='sqlite:///mydatabase',        
             conn_max_age=600    
         )
 }
