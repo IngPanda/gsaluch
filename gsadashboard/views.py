@@ -16,6 +16,7 @@ def home(request):
         'title': title
     })
 
+
 @login_required
 def sync_rfq(request):
     if request.method == 'GET':
