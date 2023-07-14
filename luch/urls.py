@@ -22,6 +22,7 @@ from gsadashboard import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('admin/', admin.site.urls),
     path('sync/', views.sync_rfq, name='sync'),
     path('list_rfqs/', views.rfqList, name='listRfqs'),
     path('rfq_view/<int:id>', views.rfqView,name="refqView"),
