@@ -83,7 +83,7 @@ WSGI_APPLICATION = "luch.wsgi.application"
 
 DATABASES = {
         'default': dj_database_url.config(             
-            default='sqlite:///mydatabase',        
+            default='sqlite:///gsadatabase',        
             conn_max_age=600    
         )
 }
