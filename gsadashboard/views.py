@@ -25,7 +25,7 @@ def sync_rfq(request):
         })
     else:
         syncData(request.POST['tokenGSA'])
-        return redirect('index')
+        return redirect('home')
 
 @login_required
 def rfqList(request):
