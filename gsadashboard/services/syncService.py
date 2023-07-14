@@ -104,7 +104,6 @@ def mapRfqs(data):
         rfq.submitted = infoRfq['rfqSubmitted']== 'true'
         rfq.saved = infoRfq['rfqSaved']== 'true'
         rfq.openRFC = infoRfq['rfqOpen']== 'true'
-        rfq.account_id = 1
         rfq.userOwner = user
         rfq.save()
     except ObjectDoesNotExist:
@@ -139,7 +138,6 @@ def mapRfqs(data):
             submitted = infoRfq['rfqSubmitted']== 'true',
             saved = infoRfq['rfqSaved']== 'true',
             openRFC = infoRfq['rfqOpen']== 'true',
-            account_id = 1,
             userOwner = user
         )
  
