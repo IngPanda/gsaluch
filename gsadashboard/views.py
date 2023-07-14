@@ -32,14 +32,17 @@ def rfqList(request):
     if request.method == 'GET':
         rfqs = list(RFQModel.objects.values())
     else:
-        if request.POST['field'] == 'id':
-            rfqs = list(RFQModel.objects.filter(idGSA__contains=request.POST['search']).values())
-        elif request.POST['field'] == 'title':
-            rfqs = list(RFQModel.objects.filter(title__contains=request.POST['search']).values())
-        elif request.POST['field'] == 'description':
-            rfqs = list(RFQModel.objects.filter(description__contains=request.POST['search']).values())
+        if request.POST['search']:
+            if request.POST['field'] == 'id':
+                rfqs = list(RFQModel.objects.filter(idGSA__contains=request.POST['search']).values())
+            elif request.POST['field'] == 'title':
+                rfqs = list(RFQModel.objects.filter(title__contains=request.POST['search']).values())
+            elif request.POST['field'] == 'description':
+                rfqs = list(RFQModel.objects.filter(description__contains=request.POST['search']).values())
+            else:
+                rfqs = list()
         else:
-            rfqs = list()
+            rfqs = list(RFQModel.objects.values())
     paginator = Paginator(rfqs, 10) 
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -89,4 +92,4 @@ def signin(request):
 @login_required
 def signout(request):
     logout(request)
-    return redirect('index')
+    return redirect('home')
