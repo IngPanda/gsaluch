@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import Account,RFQModel, Attachments, Modifications,UserOwner
+from .models import RFQModel, Attachments, Modifications,UserOwner
 # Register your models here.
 
-admin.site.register(Account)
 admin.site.register(RFQModel)
 admin.site.register(Attachments)
 admin.site.register(Modifications)

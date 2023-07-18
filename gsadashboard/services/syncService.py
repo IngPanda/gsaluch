@@ -1,5 +1,5 @@
 import json
-from ..models import RFQModel, UserOwner, Account, Attachments, Modifications
+from ..models import RFQModel, UserOwner, Attachments, Modifications
 from urllib import request, parse
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist

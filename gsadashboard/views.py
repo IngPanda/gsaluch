@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from .forms import SyncRFQS
 from .services.syncService import syncData
 from django.core.exceptions import ObjectDoesNotExist
-from .models import RFQModel, UserOwner, Account, Attachments, Modifications
+from .models import RFQModel, UserOwner, Attachments, Modifications
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate

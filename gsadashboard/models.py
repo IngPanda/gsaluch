@@ -1,22 +1,15 @@
 from django.db import models
 
 
-class Account(models.Model):
-    name = models.CharField(max_length=200,null=True)
-    lastName = models.CharField(max_length=200, null= True)
-    password = models.CharField(max_length=50,null=True)
-    position = models.CharField(max_length=200, null = True)
-    codeGSA = models.CharField(max_length=200,null=True)
-
-    def __str__(self):
-        return self.name
-
 class UserOwner(models.Model):
     idGSA = models.CharField(max_length=200,null=True)
     name = models.CharField(max_length=200,null=True)
     agency = models.CharField(max_length=200,null=True)
     agencyCode = models.CharField(max_length=200,null=True)
     userEmail = models.CharField(max_length=200,null=True)
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
 
 class RFQModel(models.Model):
     idGSA = models.CharField(max_length=35,null=True)
@@ -52,6 +45,7 @@ class RFQModel(models.Model):
     saved = models.BooleanField()
     openRFC = models.BooleanField()
     userOwner = models.ForeignKey(UserOwner, on_delete = models.PROTECT)
+    category = models.ForeignKey(Category, on_delete = models.PROTECT,null=True)
 
     def __str__(self):
         return self.idGSA +' '+self.title
@@ -75,3 +69,5 @@ class Modifications(models.Model):
     time = models.CharField(max_length=50,null=True)
     rfq = models.ForeignKey(RFQModel, on_delete = models.PROTECT)
 
+class TokensGsa(models.Model): 
+    tokenGSA = models.TextField(null=True)
