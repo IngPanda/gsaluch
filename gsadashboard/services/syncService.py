@@ -1,5 +1,5 @@
 import json
-from ..models import RFQModel, UserOwner, Attachments, Modifications
+from ..models import RFQModel, UserOwner, Attachments, Modifications, Category, RFQCategory, HistorySync
 from urllib import request, parse
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,8 +51,16 @@ def syncAttachments(docs,rfq):
                 seqNum = doc['seqNum'],
                 rfq = rfq
             )
+def syncCategoryModel(rfqId,categoryId):
+        try: 
+            modify = RFQCategory.objects.get(category_id = categoryId, rfq_id = rfqId)
+        except ObjectDoesNotExist:
+            modify = RFQCategory.objects.create(
+                category_id= categoryId,
+                rfq_id = rfqId,
+            )
 
-def mapRfqs(data):
+def mapRfqs(data, categoryId = 12):
     infoRfq = data['rfq']['rfqInfo']
     try:
         user = UserOwner.objects.get(idGSA = data['userId'])
@@ -145,9 +153,30 @@ def mapRfqs(data):
         syncAttachments(data['rfq']['rfqQAAttachments'],rfq)
     if data['rfq']['rfqModifications']:
         syncModifications(data['rfq']['rfqModifications'],rfq)
+    
+    syncCategoryModel(rfq.id,categoryId)
 
+def syncByCategory(token):
+    categories = list(Category.objects.exclude(name='default').values()) 
+    for category in categories:
+        req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/searchactiverfqs', method="POST")
+        req.add_header('Content-Type', 'application/json')
+        req.add_header('Authorization', 'Bearer '+token)
+        seach = category["name"]
+        seachId = category["id"]
+        data={"contractnumber":"47QTCA22D003S","query": seach.replace(" ","").lower(),"matchtype":1,"sortspec":"CloseDate dsc"}
+        data = json.dumps(data)
+        data = data.encode()
+        r = request.urlopen(req, data=data)
+        text = r.read()
+        rfqJsons = json.loads(text.decode('utf-8'))['response']['47QTCA22D003S']
 
-def syncData(token):
+        if rfqJsons is not None:
+            for rfq in rfqJsons:
+                mapRfqs(rfq, seachId)
+    
+
+def syncDataGeneral(token, user):
     req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/activerfqs/47QTCA22D003S')
     req.add_header('Content-Type', 'application/json')
     req.add_header('Authorization', 'Bearer '+token)
@@ -156,8 +185,14 @@ def syncData(token):
     text = response.read()
 
     rfqJsons = json.loads(text.decode('utf-8'))['response']['47QTCA22D003S']
-    rfqsModel = list(RFQModel.objects.all())
 
-    empty = True if not bool(rfqsModel) else False
     for rfq in rfqJsons:
         mapRfqs(rfq)
+
+    
+    number_of_elements = len(rfqJsons)
+    HistorySync.objects.create(
+                number = number_of_elements,
+                time = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                user = user
+    )

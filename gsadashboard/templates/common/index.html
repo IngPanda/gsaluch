@@ -1,5 +1,27 @@
 {% extends 'layouts/header.html' %}
 {% block content %}
-<h1>{{title}}</h1>
-<p></p>
+<div class="pagetitle">
+    <h1>Inicio</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Sistem GSA</h5>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Delectus consectetur a minima assumenda nemo officia sunt ratione placeat hic, accusantium inventore reprehenderit? Eius placeat in inventore error optio, voluptate assumenda.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
 {% endblock %}

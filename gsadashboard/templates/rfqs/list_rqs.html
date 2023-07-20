@@ -1,64 +1,109 @@
 {% extends 'layouts/header.html' %}
 {% block content %}
-<h1>RFQS</h1>
 
-<form class="row g-3" method="POST">
-  {% csrf_token %}
-  <div class="col-auto">
-    <select class="form-select" id="field" name="field" aria-label="Campo de busqueda">
-      <option selected>Buscar por: </option>
-      <option value="id">ID-GSA</option>
-      <option value="title">Titulo</option>
-      <option value="description">Descripcion</option>
-    </select>
-  </div>
-  <div class="col-auto">
-    <label for="inputPassword2" class="visually-hidden">Password</label>
-    <input  class="form-control"  id="search" name="search"  placeholder="">
-  </div>
-  <div class="col-auto">
-    <button type="submit" class="btn btn-primary mb-3">Buscar</button>
-  </div>
-</form>
+  <div class="pagetitle">
+    <h1>Tabla RFQS</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item">Tabla general</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <form class="row g-3" method="POST">
+          {% csrf_token %}
+          <div class="col-auto">
+            <select class="form-select" id="field" name="field" aria-label="Campo de busqueda">
+              <option selected>Buscar por: </option>
+              <option value="id">ID-GSA</option>
+              <option value="title">Titulo</option>
+              <option value="description">Descripcion</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <label for="inputPassword2" class="visually-hidden">Password</label>
+            <input  class="form-control"  id="search" name="search"  placeholder="">
+          </div>
+          <div class="col-auto">
+            <select class="form-select" name="wordSerach" aria-label="Default select example">
+              <option value="0" selected>Palabras clave predeterminadas</option>
+              {% for cat in categories %}
+              <option value="{{ cat.id }}">{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">Buscar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Lista RFQ</h5>
+        
+
+            <!-- Table with stripped rows -->
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">ID-GSA</th>
+                  <th scope="col">Titulo</th>
+                  <th scope="col">Descripcion</th>
+                  <th scope="col">Palabras clave</th>
+                  <th scope="col">..</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rfq in page_obj %}
+                <tr>
+                  <td scope="row">{{ rfq.id }}</td>
+                  <td>{{ rfq.idGSA}}</td>
+                  <td>{{ rfq.title }}</td>
+                  <td><p>{{ rfq.description|slice:":50" }}...</p></td>
+                  <td>
+                    {% for cat in rfq.categories %}
+                    -{{ cat.name }} 
+                    {% endfor %}
+                  </td>
+                  <td><a href="/rfq_view/{{ rfq.id }}" >Ver</a></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+            <!-- End Table with stripped rows -->
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item disabled">
+                  <li class="page-item"><a class="page-link" href="?page=1">Primera</a></li>
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previa</a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item"><a class="page-link" href="">{{ page_obj.number }}</a></li>
+                
+                {% if page_obj.has_next %}
+                      <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Ultima</a>
+                  {% endif %}
+            
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
 
-<table class="table table-striped table-hover">
-    <thead>
-        <td>ID</td>
-        <td>ID-GSA</td>
-        <td>Titulo</td>
-        <td>Descripcion</td>
-        <td>..</td>
-    </thead>
-    <tbody>
-      {% for rfq in page_obj %}
-        <tr>
-          <td>{{ rfq.id }}</td>
-          <td>{{ rfq.idGSA}}</td>
-          <td>{{ rfq.title}}</td>
-          <td>{{ rfq.description|slice:":100" }}...</td>
-          <td><a href="/rfq_view/{{ rfq.id }}" >Ver</a></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-</table>
-
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    {% if page_obj.has_previous %}
-    <li class="page-item disabled">
-      <li class="page-item"><a class="page-link" href="?page=1">Primera</a></li>
-      <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previa</a>
-    </li>
-    {% endif %}
-    
-    <li class="page-item"><a class="page-link" href="">{{ page_obj.number }}</a></li>
-    
-    {% if page_obj.has_next %}
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Ultima</a>
-      {% endif %}
-
-  </ul>
-</nav>
 {% endblock %}

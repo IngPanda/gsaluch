@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from .forms import SyncRFQS
-from .services.syncService import syncData
+from .services.syncService import syncDataGeneral, syncByCategory
+from .services.listRfqService import searchService, setCategories, getCategoryDist
 from django.core.exceptions import ObjectDoesNotExist
-from .models import RFQModel, UserOwner, Attachments, Modifications
+from .models import RFQModel, UserOwner, Attachments, Modifications, TokensGsa, Category, RFQCategory, HistorySync
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -24,30 +25,34 @@ def sync_rfq(request):
             'form': SyncRFQS()
         })
     else:
-        syncData(request.POST['tokenGSA'])
+        username = request.user.username
+        user = User.objects.get(username=username)
+        if request.POST['tokenGSA']:
+            syncDataGeneral(request.POST['tokenGSA'],user)
+            syncByCategory(request.POST['tokenGSA'])
+        else:
+            token = TokensGsa.objects.last()
+            syncDataGeneral(token.tokenGSA, user)
+            syncByCategory(token.tokenGSA)
         return redirect('listRfqs')
+
 
 @login_required
 def rfqList(request):
+    categories = list(Category.objects.values()) 
+    modelCategories = list(RFQCategory.objects.all().values())
+
+    defaultRfq = [x for x in modelCategories if x['category_id'] == 12]
+    ids = [val['rfq_id'] for val in defaultRfq]
     if request.method == 'GET':
-        rfqs = list(RFQModel.objects.values())
+        rfqs = list(RFQModel.objects.filter(id__in=ids).all().values())
+        listRfqs = setCategories(rfqs,categories,modelCategories)
+        paginator = Paginator(listRfqs, 10) 
     else:
-        if request.POST['search']:
-            if request.POST['field'] == 'id':
-                rfqs = list(RFQModel.objects.filter(idGSA__contains=request.POST['search']).values())
-            elif request.POST['field'] == 'title':
-                rfqs = list(RFQModel.objects.filter(title__contains=request.POST['search']).values())
-            elif request.POST['field'] == 'description':
-                rfqs = list(RFQModel.objects.filter(description__contains=request.POST['search']).values())
-            else:
-                rfqs = list()
-        else:
-            rfqs = list(RFQModel.objects.values())
-    paginator = Paginator(rfqs, 10) 
+        paginator = searchService(request.POST['search'],request.POST['field'],request.POST['wordSerach'],ids,categories,modelCategories)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    print(request.POST)
-    return render(request, 'rfqs/list_rqs.html', {"page_obj": page_obj})
+    return render(request, 'rfqs/list_rqs.html', {"page_obj": page_obj, "categories": categories })
 
 @login_required
 def rfqView(request, id):
@@ -87,9 +92,48 @@ def signin(request):
             return render(request, 'common/login.html', { "error": "Username or password is incorrect."})
 
         login(request, user)
-        return redirect('listRfqs')
+        return redirect('dashboard')
     
 @login_required
 def signout(request):
     logout(request)
     return redirect('home')
+
+@login_required
+def dashboard(request):
+    history = HistorySync.objects.select_related('user').order_by('-time').all()[:10]
+    catDist = getCategoryDist()
+    modelCategories = list(RFQCategory.objects.all().values())
+    defaultRfq = [x for x in modelCategories if x['category_id'] == 12]
+    ids = [val['rfq_id'] for val in defaultRfq]
+    rfqs = list(RFQModel.objects.filter(id__in=ids).all()[:10])
+    
+    return render(request, 'common/dashboard.html',{ 'history': history, 'catDist': catDist, 'rfqs': rfqs })
+
+@login_required
+def profile(request):
+    username = request.user.username
+    user = User.objects.get(username=username)
+    return render(request, 'common/profile.html',{ 'userLog': user })
+
+@login_required
+def saveUserData(request):
+    username = request.user.username
+    user = User.objects.get(username=username)
+    if request.POST['first_name']:
+        user.first_name = request.POST['first_name']
+    if request.POST['last_name']:
+        user.last_name = request.POST['last_name'] 
+    if request.POST['email']:
+        user.email = request.POST['email']  
+    user.save()
+    return redirect('profile')
+
+@login_required
+def savePassword(request):
+    username = request.user.username
+    user = User.objects.get(username=username)
+    if request.POST['newpassword'] == request.POST['renewpassword']:
+        user.set_password(request.POST['newpassword'])
+        user.save()
+    return redirect('profile')

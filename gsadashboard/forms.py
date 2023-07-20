@@ -9,3 +9,4 @@ class SyncRFQS(forms.Form):
         self.fields['tokenGSA'].widget.attrs['placeholder'] = 'Baerer token'
         self.fields['tokenGSA'].widget.attrs['id'] = 'tokenGSA'
         self.fields['tokenGSA'].widget.attrs['data-discount'] = '10%'
+        self.fields['tokenGSA'].required = False

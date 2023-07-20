@@ -22,6 +22,10 @@ from gsadashboard import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('profile/', views.profile, name='profile'),
+    path('saveUser/', views.saveUserData, name='saveUser'),
+    path('savePass/', views.savePassword, name='savePassword'),
     path('admin/', admin.site.urls),
     path('sync/', views.sync_rfq, name='sync'),
     path('list_rfqs/', views.rfqList, name='listRfqs'),

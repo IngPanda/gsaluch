@@ -1,0 +1,174 @@
+{% extends 'layouts/header.html' %}
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="row">
+
+      <!-- Left side columns -->
+      <div class="col-lg-8">
+        <div class="row">
+
+        {% for item in catDist %}
+          <!-- Revenue Card -->
+          <div class="col-xxl-4 col-md-6">
+            
+            <div class="card info-card revenue-card">
+              <div class="card-body">
+                <h5 class="card-title">{{ item.name }}</h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-currency-dollar"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ item.value }}</h6>
+                    <span class="text-muted small pt-2 ps-1">Registros</span>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div><!-- End Revenue Card -->
+          {% endfor %}
+
+
+
+
+    
+
+          <!-- Top Selling -->
+          <div class="col-12">
+            <div class="card top-selling overflow-auto">
+
+
+              <div class="card-body pb-0">
+                <h5 class="card-title">Top Selling <span>| Today</span></h5>
+
+                <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">ID-GSA</th>
+                        <th scope="col">Titulo</th>
+                        <th scope="col">..</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for rfq in rfqs %}
+                    <tr>
+                      <td scope="row">{{ rfq.id }}</td>
+                      <td>{{ rfq.idGSA}}</td>
+                      <td>{{ rfq.title }}</td>
+                      <td><a href="/rfq_view/{{ rfq.id }}" >Ver</a></td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+
+              </div>
+
+            </div>
+          </div><!-- End Top Selling -->
+
+        </div>
+      </div><!-- End Left side columns -->
+
+      <!-- Right side columns -->
+      <div class="col-lg-4">
+
+        <!-- Recent Activity -->
+        <div class="card">
+         
+
+          <div class="card-body">
+            <h5 class="card-title">Ultimas Sincronizaciones</h5>
+
+            <div class="activity">
+                {% for item in history %}   
+                <div class="activity-item d-flex">
+                    <div class="activite-label">{{ item.time }}</div>
+                    <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                    <div class="activity-content">
+                    {{ item.number }} registros actualizados por {{ item.user.first_name }}
+                    </div>
+                </div><!-- End activity item-->
+              {% endfor %}
+           
+
+            
+
+    
+
+            </div>
+
+          </div>
+        </div><!-- End Recent Activity -->
+
+
+        <!-- Website Traffic -->
+        <div class="card">
+  
+
+          <div class="card-body pb-0">
+            <h5 class="card-title">Distribucion por palabras clave <span>| Today</span></h5>
+
+            <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+            {{ catDist|json_script:'dataCat' }}
+            <script>
+              document.addEventListener("DOMContentLoaded", () => {
+                var js_variable = JSON.parse(document.getElementById('dataCat').textContent);
+                echarts.init(document.querySelector("#trafficChart")).setOption({
+                  tooltip: {
+                    trigger: 'item'
+                  },
+                  legend: {
+                    top: '0%',
+                    button: '50%',
+                    left: 'center'
+                  },
+                  series: [{
+                    name: 'Palabra clave',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                      show: false,
+                      position: 'center'
+                    },
+                    emphasis: {
+                      label: {
+                        show: true,
+                        fontSize: '18',
+                        fontWeight: 'bold'
+                      }
+                    },
+                    labelLine: {
+                      show: false
+                    },
+                    data: js_variable
+                  }]
+                });
+              });
+            </script>
+
+          </div>
+        </div><!-- End Website Traffic -->
+
+
+
+      </div><!-- End Right side columns -->
+
+    </div>
+  </section>
+{% endblock %}

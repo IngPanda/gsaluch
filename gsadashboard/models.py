@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class UserOwner(models.Model):
     idGSA = models.CharField(max_length=200,null=True)
@@ -45,10 +45,13 @@ class RFQModel(models.Model):
     saved = models.BooleanField()
     openRFC = models.BooleanField()
     userOwner = models.ForeignKey(UserOwner, on_delete = models.PROTECT)
-    category = models.ForeignKey(Category, on_delete = models.PROTECT,null=True)
 
     def __str__(self):
         return self.idGSA +' '+self.title
+
+class RFQCategory(models.Model):
+    rfq = models.ForeignKey(RFQModel, on_delete = models.PROTECT)
+    category = models.ForeignKey(Category, on_delete = models.PROTECT)
 
 class Attachments(models.Model):
     docName = models.CharField(max_length=200,null=True)
@@ -71,3 +74,8 @@ class Modifications(models.Model):
 
 class TokensGsa(models.Model): 
     tokenGSA = models.TextField(null=True)
+
+class HistorySync(models.Model): 
+    time = models.CharField(max_length=50,null=True)
+    number = models.IntegerField(null=True)
+    user = models.ForeignKey(User, on_delete = models.PROTECT)
