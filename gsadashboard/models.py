@@ -10,6 +10,7 @@ class UserOwner(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
+    icon = models.CharField(max_length=35,null=True)
 
 class RFQModel(models.Model):
     idGSA = models.CharField(max_length=35,null=True)

@@ -25,29 +25,41 @@ def sync_rfq(request):
             'form': SyncRFQS()
         })
     else:
-        username = request.user.username
-        user = User.objects.get(username=username)
-        if request.POST['tokenGSA']:
-            syncDataGeneral(request.POST['tokenGSA'],user)
-            syncByCategory(request.POST['tokenGSA'])
-        else:
-            token = TokensGsa.objects.last()
-            syncDataGeneral(token.tokenGSA, user)
-            syncByCategory(token.tokenGSA)
-        return redirect('listRfqs')
+        try:
+            username = request.user.username
+            user = User.objects.get(username=username)
+            if request.POST['tokenGSA']:
+                syncDataGeneral(request.POST['tokenGSA'],user)
+                syncByCategory(request.POST['tokenGSA'])
+            else:
+                token = TokensGsa.objects.last()
+                syncDataGeneral(token.tokenGSA, user)
+                syncByCategory(token.tokenGSA)
+            return render(request, 'sync/sync.html', {
+                'form': SyncRFQS(),
+                'successData': "Informacion sincronizada con exito !!!"
+            })
+        except:
+            return render(request, 'sync/sync.html', {
+                'form': SyncRFQS(),
+                'errorData': "Error al sincronizar"
+            })
 
 
 @login_required
 def rfqList(request):
     categories = list(Category.objects.values()) 
     modelCategories = list(RFQCategory.objects.all().values())
-
+    print(request.GET)
     defaultRfq = [x for x in modelCategories if x['category_id'] == 12]
     ids = [val['rfq_id'] for val in defaultRfq]
     if request.method == 'GET':
-        rfqs = list(RFQModel.objects.filter(id__in=ids).all().values())
-        listRfqs = setCategories(rfqs,categories,modelCategories)
-        paginator = Paginator(listRfqs, 10) 
+        try:
+            paginator = searchService(None,None,request.GET['category'],ids,categories,modelCategories)
+        except:
+            rfqs = list(RFQModel.objects.filter(id__in=ids).all().values())
+            listRfqs = setCategories(rfqs,categories,modelCategories)
+            paginator = Paginator(listRfqs, 10) 
     else:
         paginator = searchService(request.POST['search'],request.POST['field'],request.POST['wordSerach'],ids,categories,modelCategories)
     page_number = request.GET.get("page")
@@ -65,7 +77,11 @@ def rfqView(request, id):
         mods = list(Modifications.objects.filter(rfq_id=id))
     except ObjectDoesNotExist:
         mods = list()
-    return render(request, 'rfqs/view.html', { 'rfq': rfq, 'atts': atts, 'mods': mods})
+    try:
+        words = list(RFQCategory.objects.select_related('category').filter(rfq_id=id).exclude(category_id=12))
+    except ObjectDoesNotExist:
+        words = list()
+    return render(request, 'rfqs/view.html', { 'rfq': rfq, 'atts': atts, 'mods': mods, 'words': words})
 
 
 def signup(request):
@@ -89,7 +105,7 @@ def signin(request):
         user = authenticate(
             request, username=request.POST['username'], password=request.POST['password'])
         if user is None:
-            return render(request, 'common/login.html', { "error": "Username or password is incorrect."})
+            return render(request, 'common/login.html', { "errorData": "Username o contraseña son incorrectas."})
 
         login(request, user)
         return redirect('dashboard')
@@ -127,7 +143,7 @@ def saveUserData(request):
     if request.POST['email']:
         user.email = request.POST['email']  
     user.save()
-    return redirect('profile')
+    return render(request, 'common/profile.html',{ 'userLog': user, 'successData': "Data de perfil actualizados" })
 
 @login_required
 def savePassword(request):
@@ -136,4 +152,6 @@ def savePassword(request):
     if request.POST['newpassword'] == request.POST['renewpassword']:
         user.set_password(request.POST['newpassword'])
         user.save()
-    return redirect('profile')
+    else:
+        return render(request, 'common/profile.html',{ 'userLog': user, 'errorData': "Las contraseñas no son iguales" })
+    return render(request, 'common/profile.html',{ 'userLog': user, 'successData': "Contraseña actualizada" })

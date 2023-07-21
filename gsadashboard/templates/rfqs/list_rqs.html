@@ -5,7 +5,7 @@
     <h1>Tabla RFQS</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Tabla general</li>
       </ol>
     </nav>
@@ -54,7 +54,6 @@
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
                   <th scope="col">ID-GSA</th>
                   <th scope="col">Titulo</th>
                   <th scope="col">Descripcion</th>
@@ -65,8 +64,7 @@
               <tbody>
                 {% for rfq in page_obj %}
                 <tr>
-                  <td scope="row">{{ rfq.id }}</td>
-                  <td>{{ rfq.idGSA}}</td>
+                  <td scope="row">{{ rfq.idGSA}}</td>
                   <td>{{ rfq.title }}</td>
                   <td><p>{{ rfq.description|slice:":50" }}...</p></td>
                   <td>
