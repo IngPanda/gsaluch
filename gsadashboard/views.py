@@ -5,7 +5,7 @@ from .forms import SyncRFQS
 from .services.syncService import syncDataGeneral, syncByCategory
 from .services.listRfqService import searchService, setCategories, getCategoryDist
 from django.core.exceptions import ObjectDoesNotExist
-from .models import RFQModel, UserOwner, Attachments, Modifications, TokensGsa, Category, RFQCategory, HistorySync
+from .models import RFQModel, UserOwner, Attachments, Modifications, TokensGsa, Category, RFQCategory, HistorySync, Keyword,RFQKeyword
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -48,23 +48,23 @@ def sync_rfq(request):
 
 @login_required
 def rfqList(request):
-    categories = list(Category.objects.values()) 
-    modelCategories = list(RFQCategory.objects.all().values())
+    keywords = list(Keyword.objects.values()) 
+    modelKeywords = list(RFQKeyword.objects.all().values())
     print(request.GET)
-    defaultRfq = [x for x in modelCategories if x['category_id'] == 12]
+    defaultRfq = [x for x in modelKeywords if x['keyword_id'] == 12]
     ids = [val['rfq_id'] for val in defaultRfq]
     if request.method == 'GET':
         try:
-            paginator = searchService(None,None,request.GET['category'],ids,categories,modelCategories)
+            paginator = searchService(None,None,request.GET['keyword'],ids,keywords,modelKeywords)
         except:
             rfqs = list(RFQModel.objects.filter(id__in=ids).all().values())
-            listRfqs = setCategories(rfqs,categories,modelCategories)
+            listRfqs = setCategories(rfqs,keywords,modelKeywords)
             paginator = Paginator(listRfqs, 10) 
     else:
-        paginator = searchService(request.POST['search'],request.POST['field'],request.POST['wordSerach'],ids,categories,modelCategories)
+        paginator = searchService(request.POST['search'],request.POST['field'],request.POST['wordSerach'],ids,keywords,modelKeywords)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    return render(request, 'rfqs/list_rqs.html', {"page_obj": page_obj, "categories": categories })
+    return render(request, 'rfqs/list_rqs.html', {"page_obj": page_obj, "keywords": keywords })
 
 @login_required
 def rfqView(request, id):
@@ -78,7 +78,7 @@ def rfqView(request, id):
     except ObjectDoesNotExist:
         mods = list()
     try:
-        words = list(RFQCategory.objects.select_related('category').filter(rfq_id=id).exclude(category_id=12))
+        words = list(RFQKeyword.objects.select_related('keyword').filter(rfq_id=id).exclude(keyword_id=12))
     except ObjectDoesNotExist:
         words = list()
     return render(request, 'rfqs/view.html', { 'rfq': rfq, 'atts': atts, 'mods': mods, 'words': words})
@@ -119,8 +119,8 @@ def signout(request):
 def dashboard(request):
     history = HistorySync.objects.select_related('user').order_by('-time').all()[:10]
     catDist = getCategoryDist()
-    modelCategories = list(RFQCategory.objects.all().values())
-    defaultRfq = [x for x in modelCategories if x['category_id'] == 12]
+    modelCategories = list(RFQKeyword.objects.all().values())
+    defaultRfq = [x for x in modelCategories if x['keyword_id'] == 12]
     ids = [val['rfq_id'] for val in defaultRfq]
     rfqs = list(RFQModel.objects.filter(id__in=ids).all()[:10])
     
@@ -155,3 +155,38 @@ def savePassword(request):
     else:
         return render(request, 'common/profile.html',{ 'userLog': user, 'errorData': "Las contraseñas no son iguales" })
     return render(request, 'common/profile.html',{ 'userLog': user, 'successData': "Contraseña actualizada" })
+
+@login_required
+def listKeywords(request):
+    keys = list(Keyword.objects.filter(delete= False).values())
+    return render(request, 'keywords/keywords.html',{ 'keys': keys })
+
+@login_required
+def createKeywords(request):
+    if request.method == 'POST':
+        try: 
+          key = Keyword.objects.get(name= request.POST['name'], delete = False)
+          key.name = name= request.POST['name']
+          key.activeSearch =  True if request.POST['search'] == 'on' else False
+          key.save()
+          return render(request, 'keywords/create.html',{ 'successData': "Palabra clave Actualizada" })
+        except ObjectDoesNotExist:
+            keyword = Keyword.objects.create(
+                name= request.POST['name'],
+                icon = "bx bx-message-square",
+                activeSearch = True if request.POST['search'] == 'on' else False 
+            )
+            return render(request, 'keywords/create.html',{ 'successData': "Palabra clave creada" })
+    else:
+        return render(request, 'keywords/create.html')
+    
+
+@login_required
+def deleteKeywords(request, id):
+    try: 
+        key = Keyword.objects.get(id = id, delete = False)
+        key.delete = True
+        key.save()
+        return redirect('keywords')
+    except ObjectDoesNotExist:
+        return redirect('keywords')

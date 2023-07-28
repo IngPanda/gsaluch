@@ -1,5 +1,5 @@
 import json
-from ..models import RFQModel, UserOwner, Attachments, Modifications, Category, RFQCategory, HistorySync
+from ..models import RFQModel, UserOwner, Attachments, Modifications, Category, RFQCategory, HistorySync,Keyword,RFQKeyword
 from urllib import request, parse
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,16 +51,16 @@ def syncAttachments(docs,rfq):
                 seqNum = doc['seqNum'],
                 rfq = rfq
             )
-def syncCategoryModel(rfqId,categoryId):
+def syncCategoryModel(rfqId,keywordId):
         try: 
-            modify = RFQCategory.objects.get(category_id = categoryId, rfq_id = rfqId)
+            modify = RFQKeyword.objects.get(keyword_id = keywordId, rfq_id = rfqId)
         except ObjectDoesNotExist:
-            modify = RFQCategory.objects.create(
-                category_id= categoryId,
+            modify = RFQKeyword.objects.create(
+                keyword_id= keywordId,
                 rfq_id = rfqId,
             )
 
-def mapRfqs(data, categoryId = 12):
+def mapRfqs(data, keywordId = 12):
     infoRfq = data['rfq']['rfqInfo']
     try:
         user = UserOwner.objects.get(idGSA = data['userId'])
@@ -154,10 +154,10 @@ def mapRfqs(data, categoryId = 12):
     if data['rfq']['rfqModifications']:
         syncModifications(data['rfq']['rfqModifications'],rfq)
     
-    syncCategoryModel(rfq.id,categoryId)
+    syncCategoryModel(rfq.id,keywordId)
 
 def syncByCategory(token):
-    categories = list(Category.objects.exclude(name='default').values()) 
+    categories = list(Keyword.objects.exclude(name='default', activeSearch = True, delete= False).values()) 
     for category in categories:
         req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/searchactiverfqs', method="POST")
         req.add_header('Content-Type', 'application/json')

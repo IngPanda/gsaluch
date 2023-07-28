@@ -1,0 +1,46 @@
+{% extends 'layouts/header.html' %}
+{% block content %}
+
+<div class="pagetitle">
+<h1>Palabras clave</h1>
+<nav>
+    <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item">Lista de palabras clave</li>
+    </ol>
+</nav>
+</div><!-- End Page Title -->
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+             <!-- Table with stripped rows -->
+             <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Palabra</th>
+                    <th scope="col">Estado para Sync</th>
+                    <th scope="col">Modificar</th>
+                    <th scope="col">Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for key in keys %}
+                  <tr>
+                    <td scope="row">{{ key.name }}</td>
+                    <td>{% if key.activeSearch %}
+                        <span class="badge rounded-pill bg-success">Activo</span>
+                        {% else %}
+                        <span class="badge rounded-pill bg-danger">Desactivado</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="#" ><i class="bx bxs-pencil"></i></a></td>
+                    <td><a href="/keywords/delete/{{ key.id }}" ><i class="bx bxs-trash"></i></a></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

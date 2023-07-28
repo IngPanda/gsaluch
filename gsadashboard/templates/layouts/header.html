@@ -129,7 +129,23 @@
           </li>
         </ul>
       </li><!-- End Tables Nav -->
-
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#key-nav" data-bs-toggle="collapse" href="#">
+          <i class="ri-advertisement-line"></i><span>Palabras Clave</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="key-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'keywords' %}">
+              <i class="bi bi-circle"></i><span>Lista de palabras clave</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'keywords_create' %}">
+              <i class="bi bi-circle"></i><span>Crear palabra clave</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Tables Nav -->
       <li class="nav-item">
         <a class="nav-link " href="{% url 'sync' %}">
           <i class="bx bx-sync"></i>

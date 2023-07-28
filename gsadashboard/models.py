@@ -11,6 +11,13 @@ class UserOwner(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=50)
     icon = models.CharField(max_length=35,null=True)
+    activeSearch = models.BooleanField(default=False)
+
+class Keyword(models.Model):
+    name = models.CharField(max_length=50)
+    icon = models.CharField(max_length=35,null=True)
+    activeSearch = models.BooleanField(default=False)
+    delete = models.BooleanField(default=False)
 
 class RFQModel(models.Model):
     idGSA = models.CharField(max_length=35,null=True)
@@ -53,6 +60,10 @@ class RFQModel(models.Model):
 class RFQCategory(models.Model):
     rfq = models.ForeignKey(RFQModel, on_delete = models.PROTECT)
     category = models.ForeignKey(Category, on_delete = models.PROTECT)
+
+class RFQKeyword(models.Model):
+    rfq = models.ForeignKey(RFQModel, on_delete = models.PROTECT)
+    keyword = models.ForeignKey(Keyword, on_delete = models.PROTECT)
 
 class Attachments(models.Model):
     docName = models.CharField(max_length=200,null=True)

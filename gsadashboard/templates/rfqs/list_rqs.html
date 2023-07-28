@@ -31,7 +31,7 @@
           <div class="col-auto">
             <select class="form-select" name="wordSerach" aria-label="Default select example">
               <option value="0" selected>Palabras clave predeterminadas</option>
-              {% for cat in categories %}
+              {% for cat in keywords %}
               <option value="{{ cat.id }}">{{ cat.name }}</option>
               {% endfor %}
             </select>
@@ -68,7 +68,7 @@
                   <td>{{ rfq.title }}</td>
                   <td><p>{{ rfq.description|slice:":50" }}...</p></td>
                   <td>
-                    {% for cat in rfq.categories %}
+                    {% for cat in rfq.keywords %}
                     -{{ cat.name }} 
                     {% endfor %}
                   </td>
