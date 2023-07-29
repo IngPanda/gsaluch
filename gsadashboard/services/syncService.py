@@ -196,3 +196,34 @@ def syncDataGeneral(token, user):
                 time = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 user = user
     )
+
+def syncSingleCategory(token, keyword, keywordId):
+    req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/searchactiverfqs', method="POST")
+    req.add_header('Content-Type', 'application/json')
+    req.add_header('Authorization', 'Bearer '+token)
+    data={"contractnumber":"47QTCA22D003S","query": keyword.replace(" ","").lower(),"matchtype":1,"sortspec":"CloseDate dsc"}
+    data = json.dumps(data)
+    data = data.encode()
+    r = request.urlopen(req, data=data)
+    text = r.read()
+    rfqJsons = json.loads(text.decode('utf-8'))['response']['47QTCA22D003S']
+    if rfqJsons is not None:
+            for rfq in rfqJsons:
+                mapRfqs(rfq, keywordId)
+
+def syncDetail(token, GSAID):
+    req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/rfq/'+GSAID+'/47QTCA22D003S')
+    req.add_header('Content-Type', 'application/json')
+    req.add_header('Authorization', 'Bearer '+token)
+    response = request.urlopen(req)
+
+    text = response.read()
+
+    data = json.loads(text.decode('utf-8'))['response']
+    rfq = RFQModel.objects.get(idGSA = data['rfqInfo']['rfqId']) 
+    Att_A = data['rfqQAAttachments']
+    Att_B = data['rfqAttachments']
+    mods = data['rfqModifications']
+    att = Att_A + Att_B
+    syncAttachments(att,rfq)
+    syncModifications(mods,rfq)

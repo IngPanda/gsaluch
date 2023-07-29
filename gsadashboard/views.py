@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from .forms import SyncRFQS
-from .services.syncService import syncDataGeneral, syncByCategory
+from .services.syncService import syncDataGeneral, syncByCategory, syncSingleCategory,syncDetail
 from .services.listRfqService import searchService, setCategories, getCategoryDist
 from django.core.exceptions import ObjectDoesNotExist
 from .models import RFQModel, UserOwner, Attachments, Modifications, TokensGsa, Category, RFQCategory, HistorySync, Keyword,RFQKeyword
@@ -68,6 +68,10 @@ def rfqList(request):
 
 @login_required
 def rfqView(request, id):
+    if request.method == 'POST':
+        token = TokensGsa.objects.last()
+        syncDetail(token.tokenGSA, request.POST['idGSA'])
+        return redirect(request.META.get('HTTP_REFERER'))
     rfq = get_object_or_404(RFQModel, id=id)
     try:
         atts = list(Attachments.objects.filter(rfq_id=id))
@@ -169,6 +173,9 @@ def createKeywords(request):
           key.name = name= request.POST['name']
           key.activeSearch =  True if request.POST['search'] == 'on' else False
           key.save()
+          if request.POST['sync'] == 'on':
+              token = TokensGsa.objects.last()
+              syncSingleCategory(token.tokenGSA, key.name, key.id)
           return render(request, 'keywords/create.html',{ 'successData': "Palabra clave Actualizada" })
         except ObjectDoesNotExist:
             keyword = Keyword.objects.create(
@@ -190,3 +197,33 @@ def deleteKeywords(request, id):
         return redirect('keywords')
     except ObjectDoesNotExist:
         return redirect('keywords')
+
+@login_required
+def editKeywords(request, id):
+    try:
+        if request.method == 'GET': 
+            key = Keyword.objects.get(id = id, delete = False)
+            checkValueSync =  "checked" if key.activeSearch else " "
+            return render(request, 'keywords/edit.html', {'key': key, 'checkValueSync': checkValueSync})
+        else:
+            key = Keyword.objects.get(id = request.POST['keywordId'])
+            key.name = name= request.POST['name']
+            key.activeSearch =  True if request.POST['search'] == 'on' else False
+            key.save()
+            if request.POST['sync'] == 'on':
+              token = TokensGsa.objects.last()
+              syncSingleCategory(token.tokenGSA, key.name, key.id)
+            return redirect('keywords')
+    except ObjectDoesNotExist:
+        return redirect('keywords')
+
+@login_required
+def saveToken(request):
+     if request.method == 'GET':
+         return render(request, 'sync/token.html')
+     else:
+        keyword = TokensGsa.objects.create(
+            tokenGSA= request.POST['token'],
+        )
+        return render(request, 'sync/token.html', { 'successData': "Token guardado" })
+     

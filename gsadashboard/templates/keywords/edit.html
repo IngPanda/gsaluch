@@ -1,0 +1,63 @@
+{% extends 'layouts/header.html' %}
+{% block content %}
+
+<div class="pagetitle">
+<h1>Crear palabra clave</h1>
+<nav>
+    <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li class="breadcrumb-item">Editar palabra</li>
+    </ol>
+</nav>
+</div><!-- End Page Title -->
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">    
+         
+             {% if successData %}
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ successData }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% endif %}
+              {% if errorData %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ errorData }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% endif %}
+          
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Palabras claves</h5>
+                    <form class="row g-3" method="POST"> 
+                        {% csrf_token %} 
+                        <input type="hidden" id="keywordId" name="keywordId" value="{{ key.id }}">
+                        <label for="inputText" class="col-sm-2 col-form-label">Palabra</label>
+                        <div class="col-sm-10">
+                        <input type="text" name="name" value="{{ key.name }}" class="form-control">
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" name="search" type="checkbox" id="flexSwitchCheckChecked" {{ checkValueSync }}>
+                            <label class="form-check-label" for="flexSwitchCheckChecked" >Incluir en sync</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" name="sync" type="checkbox"  id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Sync ahora</label>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary mb-3">Crear</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

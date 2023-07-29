@@ -31,8 +31,10 @@ urlpatterns = [
     path('keywords/', views.listKeywords, name='keywords'),
     path('keywords/create/', views.createKeywords, name='keywords_create'),
     path('rfq_view/<int:id>', views.rfqView,name="refqView"),
-     path('keywords/delete/<int:id>', views.deleteKeywords,name="deleteKey"),
+    path('keywords/delete/<int:id>', views.deleteKeywords,name="deleteKey"),
+    path('keywords/edit/<int:id>', views.editKeywords,name="editKey"),
     path('sigin/', views.signin,name="signin"),
+    path('token/', views.saveToken,name="token"),
     path('signup/', views.signup,name="signup"),
     path('logout/', views.signout, name='logout'),
 ]

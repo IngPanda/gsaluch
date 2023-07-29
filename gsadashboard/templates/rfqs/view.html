@@ -104,7 +104,19 @@
       </div>
 
       <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Actualizar detalle</h5>
 
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" id="id" name="id" value="{{ rfq.id }}">
+              <input type="hidden" id="idGSA" name="idGSA" value="{{ rfq.idGSA }}">
+              <button type="submit" class="btn btn-primary btn-lg" data-bs-toggle="tooltip" data-bs-placement="right" title="Sincronizar con la api GSA para traer informacion adicional de detalle del RFQ">Sync</button>
+            </form>
+
+          </div>
+        </div>
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Archivos Adjuntos</h5>
@@ -120,7 +132,7 @@
                     <td>{{ att.docName }}</td>
                     <td>    
                       <a class="nav-link nav-icon" href="{{ att.docPath }}">
-                      <span class="badge bg-primary badge-number">Descargar</span></a>
+                      <span class="badge bg-primary badge-number" >Descargar</span></a>
                     </a><!-- End Notification Icon --></td>
                   </tr>
                   {% endfor %}
@@ -142,7 +154,7 @@
                 {% for word in words %}
                   <tr>
                     <td><i class="{{ word.category.icon }}"></i></td>
-                    <td>{{ word.category.name }}</td>
+                    <td>{{ word.keyword.name }}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
