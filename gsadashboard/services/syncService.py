@@ -1,5 +1,5 @@
 import json
-from ..models import RFQModel, UserOwner, Attachments, Modifications, Category, RFQCategory, HistorySync,Keyword,RFQKeyword
+from ..models import CategoryByRFQ, RFQModel, UserOwner, Attachments, Modifications, HistorySync,Keyword,RFQKeyword,RFQHistorySync,Addresses, VendorCategory
 from urllib import request, parse
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,9 +51,151 @@ def syncAttachments(docs,rfq):
                 seqNum = doc['seqNum'],
                 rfq = rfq
             )
-def syncCategoryModel(rfqId,keywordId):
+def syncVendors(ven,category):
+    try:
+        vendorModel = VendorCategory.objects.get(contractNum = ven['contractNum'] )
+        vendorModel.contractNum = ven['contractNum']
+        vendorModel.schedule = ven['schedule']
+        vendorModel.sin = ven['sin']
+        vendorModel.subCategory = ven['subCategory']
+        vendorModel.email = ven['email']
+        vendorModel.vendorCategoryKey = ven['vendorCategoryKey']
+        vendorModel.companyName = ven['companyName']
+        vendorModel.otherCategories = ven['otherCategories']
+        vendorModel.arravendor = ven['arravendor']
+        vendorModel.save()
+    except ObjectDoesNotExist:
+        vendorModel = VendorCategory.objects.create(
+                contractNum = ven['contractNum'],
+                schedule = ven['schedule'],
+                sin = ven['sin'],
+                subCategory = ven['subCategory'],
+                email = ven['email'],
+                vendorCategoryKey = ven['vendorCategoryKey'],
+                companyName = ven['companyName'],
+                otherCategories = ven['otherCategories'],
+                arravendor = ven['arravendor'],
+                category = category
+        )
+        
+def syncCategory(categories,rfq):
+    for cat in categories: 
+        try:
+            catModel = CategoryByRFQ.objects.get(categoryId = cat['categoryId'])
+            catModel.categoryId = cat['categoryId']
+            catModel.schedule = cat['schedule']
+            catModel.sin = cat['sin']
+            catModel.subCategory = cat['subCategory']
+            catModel.subCategoryDescription = cat['subCategoryDescription']
+            catModel.vendorCount = cat['vendorCount']
+            catModel.alreadyExists = cat['alreadyExists']
+            catModel.valid = cat['valid']
+            catModel.hideInEbuy = cat['hideInEbuy']
+            catModel.scheduleTitle = cat['scheduleTitle']
+            catModel.sinDescription1 = cat['sinDescription1']
+            catModel.sinDescription2 = cat['sinDescription2']
+            catModel.scheduleTypeId = cat['scheduleTypeId']
+            catModel.save()
+        except ObjectDoesNotExist:
+             catModel = CategoryByRFQ.objects.create(
+                categoryId = cat['categoryId'],
+                schedule = cat['schedule'],
+                sin = cat['sin'],
+                subCategory = cat['subCategory'],
+                subCategoryDescription = cat['subCategoryDescription'],
+                vendorCount = cat['vendorCount'],
+                alreadyExists = cat['alreadyExists'],
+                valid = cat['valid'],
+                hideInEbuy = cat['hideInEbuy'],
+                scheduleTitle = cat['scheduleTitle'],
+                sinDescription1 = cat['sinDescription1'],
+                sinDescription2 = cat['sinDescription2'],
+                scheduleTypeId = cat['scheduleTypeId'],
+                rfq = rfq
+            )
+        
+        for ven in cat['rfqVendors']:
+            syncVendors(ven,catModel)
+
+def syncAdresses(adress,rfq):
+
+    for adres in adress:
         try: 
-            modify = RFQKeyword.objects.get(keyword_id = keywordId, rfq_id = rfqId)
+            adrsModel = Addresses.objects.get(addressName = adres['addressName'])
+            adrsModel.addressName = adres['addressName']
+            adrsModel.addressType = adres['addressType']
+            adrsModel.addressDepartment = adres['addressDepartment']
+            adrsModel.homeAddressAcknowledgement = adres['homeAddressAcknowledgement'] == 'true'
+            adrsModel.country = adres['country']
+            adrsModel.countryName = adres['countryName']
+            adrsModel.agencyName = adres['agencyName']
+            adrsModel.addressLine1 = adres['addressLine1']
+            adrsModel.addressLine2 = adres['addressLine2']
+            adrsModel.city = adres['city']
+            adrsModel.state = adres['state']
+            adrsModel.zipCode = adres['zip']
+            adrsModel.defaultAddress = adres['defaultAddress'] == 'true'
+            adrsModel.freightAddress = adres['freightAddress']
+            adrsModel.crpAddress = adres['crpAddress']
+            adrsModel.invoiceAddress = adres['invoiceAddress']
+            adrsModel.crpAAC = adres['crpAAC']
+            adrsModel.dodAAC = adres['dodAAC']
+            adrsModel.markFor = adres['markFor']
+            adrsModel.irsDataName = adres['irsData']['name']
+            adrsModel.irsDataEmail = adres['irsData']['email']
+            adrsModel.irsDataPhone = adres['irsData']['phone']
+            adrsModel.nameNotes = adres['nameNotes']
+            adrsModel.emailNotes = adres['emailNotes']
+            adrsModel.phoneNotes = adres['phoneNotes']
+            adrsModel.shippingAacId = adres['shippingAacId']
+            adrsModel.exportIndicator = adres['exportIndicator']
+            adrsModel.controlProgram = adres['controlProgram']
+            adrsModel.valid = adres['valid'] == 'true'
+            adrsModel.irsDataExists = adres['irsDataExists']== 'true'
+            adrsModel.mandatorySet = adres['mandatorySet']== 'true'
+            adrsModel.addressEmpty = adres['addressEmpty']== 'true'
+            adrsModel.invidualReceivingInfoValid = adres['invidualReceivingInfoValid']== 'true'
+            adrsModel.save()
+        except ObjectDoesNotExist:
+            Addresses.objects.create(
+                addressName = adres['addressName'],
+                addressType = adres['addressType'],
+                addressDepartment = adres['addressDepartment'],
+                homeAddressAcknowledgement = adres['homeAddressAcknowledgement'] == 'true',
+                country = adres['country'],
+                countryName = adres['countryName'],
+                agencyName = adres['agencyName'],
+                addressLine1 = adres['addressLine1'],
+                addressLine2 = adres['addressLine2'],
+                city = adres['city'],
+                state = adres['state'],
+                zipCode = adres['zip'],
+                defaultAddress = adres['defaultAddress'] == 'true',
+                freightAddress = adres['freightAddress'],
+                crpAddress = adres['crpAddress'],
+                invoiceAddress = adres['invoiceAddress'],
+                crpAAC = adres['crpAAC'],
+                dodAAC = adres['dodAAC'],
+                markFor = adres['markFor'],
+                irsDataName = adres['irsData']['name'],
+                irsDataEmail = adres['irsData']['email'],
+                irsDataPhone = adres['irsData']['phone'],
+                nameNotes = adres['nameNotes'],
+                emailNotes = adres['emailNotes'],
+                phoneNotes = adres['phoneNotes'],
+                shippingAacId = adres['shippingAacId'],
+                exportIndicator = adres['exportIndicator'],
+                controlProgram = adres['controlProgram'],
+                valid = adres['valid'] == 'true',
+                irsDataExists = adres['irsDataExists']== 'true',
+                mandatorySet = adres['mandatorySet']== 'true',
+                addressEmpty = adres['addressEmpty']== 'true',
+                invidualReceivingInfoValid = adres['invidualReceivingInfoValid']== 'true',
+                rfq = rfq
+            )
+def syncKeywordModel(rfqId,keywordId):
+        try: 
+            modify = RFQKeyword.objects.get(keyword_id = keywordId, rfq_id = rfqId).value()
         except ObjectDoesNotExist:
             modify = RFQKeyword.objects.create(
                 keyword_id= keywordId,
@@ -63,7 +205,7 @@ def syncCategoryModel(rfqId,keywordId):
 def mapRfqs(data, keywordId = 12):
     infoRfq = data['rfq']['rfqInfo']
     try:
-        user = UserOwner.objects.get(idGSA = data['userId'])
+        user = UserOwner.objects.get(idGSA = data['userId']).value()
         user.idGSA = data['userId']
         user.name = data['userName']
         user.agency = data['userAgency']
@@ -80,7 +222,7 @@ def mapRfqs(data, keywordId = 12):
         )
    
     try:
-        rfq = RFQModel.objects.get(idGSA = data['rfqId'])  
+        rfq = RFQModel.objects.get(idGSA = data['rfqId']).value()  
         #RFQ
         rfq.idGSA = data['rfqId']
         rfq.title = data['title']
@@ -154,16 +296,16 @@ def mapRfqs(data, keywordId = 12):
     if data['rfq']['rfqModifications']:
         syncModifications(data['rfq']['rfqModifications'],rfq)
     
-    syncCategoryModel(rfq.id,keywordId)
+    syncKeywordModel(rfq.id,keywordId)
 
 def syncByCategory(token):
-    categories = list(Keyword.objects.exclude(name='default', activeSearch = True, delete= False).values()) 
-    for category in categories:
+    keywords = list(Keyword.objects.exclude(name='default', activeSearch = True, delete= False).values()) 
+    for keyword in keywords:
         req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/searchactiverfqs', method="POST")
         req.add_header('Content-Type', 'application/json')
         req.add_header('Authorization', 'Bearer '+token)
-        seach = category["name"]
-        seachId = category["id"]
+        seach = keyword["name"]
+        seachId = keyword["id"]
         data={"contractnumber":"47QTCA22D003S","query": seach.replace(" ","").lower(),"matchtype":1,"sortspec":"CloseDate dsc"}
         data = json.dumps(data)
         data = data.encode()
@@ -197,7 +339,7 @@ def syncDataGeneral(token, user):
                 user = user
     )
 
-def syncSingleCategory(token, keyword, keywordId):
+def syncSingleCategory(token, keyword, keywordId, user):
     req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/searchactiverfqs', method="POST")
     req.add_header('Content-Type', 'application/json')
     req.add_header('Authorization', 'Bearer '+token)
@@ -210,8 +352,14 @@ def syncSingleCategory(token, keyword, keywordId):
     if rfqJsons is not None:
             for rfq in rfqJsons:
                 mapRfqs(rfq, keywordId)
+    number_of_elements = 0 if rfqJsons == None else len(rfqJsons)
+    HistorySync.objects.create(
+                number = number_of_elements,
+                time = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                keyword = keyword,
+                user = user )
 
-def syncDetail(token, GSAID):
+def syncDetail(token, user,GSAID):
     req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/rfq/'+GSAID+'/47QTCA22D003S')
     req.add_header('Content-Type', 'application/json')
     req.add_header('Authorization', 'Bearer '+token)
@@ -224,6 +372,14 @@ def syncDetail(token, GSAID):
     Att_A = data['rfqQAAttachments']
     Att_B = data['rfqAttachments']
     mods = data['rfqModifications']
+    gsAdresss = data['rfqAddresses']
+    gsaCategories = data['rfqCategories']
     att = Att_A + Att_B
     syncAttachments(att,rfq)
     syncModifications(mods,rfq)
+    syncAdresses(gsAdresss,rfq)
+    syncCategory(gsaCategories,rfq)
+    RFQHistorySync.objects.create(
+                time = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                rfq = rfq,
+                user = user )

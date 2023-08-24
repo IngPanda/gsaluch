@@ -1,0 +1,82 @@
+{% extends 'layouts/header.html' %}
+{% block content %}
+
+
+  <div class="pagetitle">
+    <h1>RFQS  {{ rfq.title }}</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'listRfqs' %}">Lista RFQ</a></li>
+        <li class="breadcrumb-item"><a href="/rfq_view/{{ category.rfq.id }}">{{ category.rfq.idGSA }}</a></li>
+        <li class="breadcrumb-item"><a href="/rfq_view/{{ category.rfq.id }}">{{ category.categoryId }}</a></li>
+        <li class="breadcrumb-item active">Vendedores</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Lista Vendors</h5>
+              
+      
+                  <!-- Table with stripped rows -->
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">Contract Num</th>
+                        <th scope="col">Schedule</th>
+                        <th scope="col">Sin</th>
+                        <th scope="col">SubCategory</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Vendor Category key</th>
+                        <th scope="col">Company Name</th>
+                        <th scope="col">otherCategories</th>
+                        <th scope="col">arravendor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for ven in page_obj %}
+                      <tr>
+                        <td scope="row">{{ ven.contractNum}}</td>
+                        <td>{{ ven.schedule }}</td>
+                        <td>{{ ven.sin }}</td>
+                        <td>{{ ven.subCategory }}</td>
+                        <td>{{ ven.email }}</td>
+                        <td>{{ ven.vendorCategoryKey }}</td>
+                        <td>{{ ven.companyName }}</td>
+                        <td>{{ ven.otherCategories }}</td>
+                        <td>{{ ven.arravendor }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                  <!-- End Table with stripped rows -->
+                  <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                      {% if page_obj.has_previous %}
+                      <li class="page-item disabled">
+                        <li class="page-item"><a class="page-link" href="?page=1">Primera</a></li>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previa</a>
+                      </li>
+                      {% endif %}
+                      
+                      <li class="page-item"><a class="page-link" href="">{{ page_obj.number }}</a></li>
+                      
+                      {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Ultima</a>
+                        {% endif %}
+                  
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

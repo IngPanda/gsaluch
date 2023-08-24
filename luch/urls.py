@@ -17,25 +17,46 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from gsadashboard import views
+from gsadashboard.controllers import rfq_controller, vendor_controller, access_controller, user_controller, keywords_controller, comment_controller
 
 
 urlpatterns = [
+    # Dashboard
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('profile/', views.profile, name='profile'),
-    path('saveUser/', views.saveUserData, name='saveUser'),
-    path('savePass/', views.savePassword, name='savePassword'),
+
+
+    # RFQ
+    path('sync/', rfq_controller.sync_rfq, name='sync'),
+    path('list_rfqs/',rfq_controller.rfqList, name='listRfqs'),
+    path('rfq_view/<int:id>', rfq_controller.rfqView,name="refqView"),
+
+    # Profile
+    
+    path('profile/', user_controller.profile, name='profile'),
+    path('saveUser/', user_controller.saveUserData, name='saveUser'),
+    path('savePass/', user_controller.savePassword, name='savePassword'),
     path('admin/', admin.site.urls),
-    path('sync/', views.sync_rfq, name='sync'),
-    path('list_rfqs/', views.rfqList, name='listRfqs'),
-    path('keywords/', views.listKeywords, name='keywords'),
-    path('keywords/create/', views.createKeywords, name='keywords_create'),
-    path('rfq_view/<int:id>', views.rfqView,name="refqView"),
-    path('keywords/delete/<int:id>', views.deleteKeywords,name="deleteKey"),
-    path('keywords/edit/<int:id>', views.editKeywords,name="editKey"),
-    path('sigin/', views.signin,name="signin"),
+
+    # Keywords
+    path('keywords/', keywords_controller.listKeywords, name='keywords'),
+    path('keywords/create/', keywords_controller.createKeywords, name='keywords_create'),
+    path('keywords/delete/<int:id>', keywords_controller.deleteKeywords,name="deleteKey"),
+    path('keywords/edit/<int:id>', keywords_controller.editKeywords,name="editKey"),
+    path('keywords/edit/<int:id>/<str:state>', keywords_controller.editKeywordsState,name="editKey"),
+
+    # Vendors
+    path('vendors/<int:cat>', vendor_controller.vendorList,name="vendorsList"),
+    
+    #access user
+    
+    path('sigin/', access_controller.signin,name="signin"),
     path('token/', views.saveToken,name="token"),
-    path('signup/', views.signup,name="signup"),
-    path('logout/', views.signout, name='logout'),
+    path('signup/', access_controller.signup,name="signup"),
+    path('logout/', access_controller.signout, name='logout'),
+
+    #comment
+    path('comment/', comment_controller.saveComment,name="createComment")
+
 ]
 

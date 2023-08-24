@@ -101,6 +101,72 @@
           </table>
           </div>
         </div>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Comentarios Luch</h5>
+            
+            <table class="table table-striped table-hover">
+              <thead>
+                  <td>Comentario</td>
+                  <td>Usuario</td>
+                  <td>Fecha</td>
+                  <td>Ver</td>
+              </thead>
+              <tbody>
+                {% for com in comments %}
+                <div class="modal fade" id="basicModal" tabindex="-1">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Comentario de {{ com.user.first_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        {{ com.comment }}
+                      </div>
+                    </div>
+                  </div>
+                </div><!-- End Basic Modal-->
+                  <tr>
+                    <td>{{ com.comment|slice:":20" }}</td>
+                    <td>{{ com.user.first_name }}</td>
+                    <td>{{ com.time }}</td>
+                    <td>
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
+                      Ver
+                    </button>
+                  </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary btn-m" data-bs-toggle="modal" data-bs-target="#verticalycentered" >Agregar Comentario</button>
+          <div class="modal fade" id="verticalycentered" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Agregar comentario</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form class="row g-3" action="{% url 'createComment' %}" method="POST"> 
+                    {% csrf_token %} 
+                    <div class="col-sm-10">
+                      <input type="hidden" id="rfqId" name="rfqId" value="{{ rfq.id }}">
+                      <input type="hidden" id="userId" name="userId" value="{{ user.id }}">
+                      <textarea type="comment" name="comment" class="form-control"></textarea>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary mb-3">Cargar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Vertically centered Modal-->
+          </div>
+        </div>
+   
       </div>
 
       <div class="col-lg-4">
@@ -117,6 +183,48 @@
 
           </div>
         </div>
+        <div class="card">
+
+          <div class="card-body">
+            <h5 class="card-title">Ultimas Sincronizaciones</h5>
+
+            <div class="activity">
+                {% for item in history %}   
+                <div class="activity-item d-flex">
+                    <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                    <div class="activity-content">
+                    Actualizado por {{ item.user.first_name }} - {{ item.time }}
+                    </div>
+                </div><!-- End activity item-->
+              {% endfor %}
+
+            </div>
+
+          </div>
+        </div><!-- End Recent Activity -->
+
+        
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Palabras Clave</h5>
+            <table class="table table-striped table-hover">
+              <thead>
+                  <td>#</td>
+                  <td>Palabra </td>
+              </thead>
+              <tbody>
+                {% for word in words %}
+                  <tr>
+                    <td><i class="{{ word.category.icon }}"></i></td>
+                    <td>{{ word.keyword.name }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+          </table>
+           
+          </div>
+        </div>
+        
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Archivos Adjuntos</h5>
@@ -144,17 +252,24 @@
 
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Palabras Clave</h5>
+            <h5 class="card-title">Categoria GSA</h5>
             <table class="table table-striped table-hover">
               <thead>
-                  <td>#</td>
-                  <td>Palabra </td>
+                  <td>schedule</td>
+                  <td>Sin</td>
+                  <td>Descripcion</td>
+                  <td>Vendors</td>
               </thead>
               <tbody>
-                {% for word in words %}
+                {% for cat in categories %}
                   <tr>
-                    <td><i class="{{ word.category.icon }}"></i></td>
-                    <td>{{ word.keyword.name }}</td>
+                    <td>{{ cat.schedule }}</td>
+                    <td>{{ cat.sin }}</td>
+                    <td>{{ cat.sinDescription1 }}</td>
+                    <td>    
+                      <a class="nav-link nav-icon" href="/vendors/{{cat.id}}">
+                      <span class="badge bg-primary badge-number" >Ver Vendedores</span></a>
+                    </a><!-- End Notification Icon --></td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -166,6 +281,49 @@
        
       </div>
 
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Direcciones</h5>
+
+            <table class="table table-striped table-hover">
+              <thead>
+                  <td>Nombre</td>
+                  <td>Agencia</td>
+                  <td>Direccion</td>
+                  <td>Estado</td>
+                  <td>Ciudad</td>
+                  <td>Zip Code</td>
+                  <td>IRS Data</td>
+                  <td>Direccion Principal</td>
+              </thead>
+              <tbody>
+                {% for adr in adresses %}
+                  <tr>
+                    <td>{{ adr.addressName }}</td>
+                    <td>{{ adr.agencyName }}</td>
+                    <td>{{ adr.addressLine1 }} </br> {{ adr.addressLine2 }}</td>
+                    <td>{{ adr.state }}</td>
+                    <td>{{ adr.city }}</td>
+                    <td>{{ adr.zipCode }}</td>
+                    <td>{{ adr.irsDataName }}</br>
+                    {{ adr.irsDataPhone }}</br>
+                    {{ adr.irsDataEmail }}</td>
+                    <td>{% if adr.defaultAddress %}
+                      <span class="badge rounded-pill bg-success">Si</span>
+                        {% else %}
+                      <span class="badge rounded-pill bg-danger">No</span>
+                        {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 

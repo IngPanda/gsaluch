@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from ..models import RFQModel,RFQCategory,Category,RFQKeyword, Keyword
+from ..models import RFQModel,RFQKeyword, Keyword
 
 def getCategoryDist():
     categoriesList = list(Keyword.objects.all().values())

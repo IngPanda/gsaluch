@@ -28,9 +28,9 @@
                   <tr>
                     <td scope="row">{{ key.name }}</td>
                     <td>{% if key.activeSearch %}
-                        <span class="badge rounded-pill bg-success">Activo</span>
+                      <a href="/keywords/edit/{{ key.id }}/False" ><span class="badge rounded-pill bg-success">Activo</span></a>
                         {% else %}
-                        <span class="badge rounded-pill bg-danger">Desactivado</span>
+                      <a href="/keywords/edit/{{ key.id }}/True" ><span class="badge rounded-pill bg-danger">Desactivado</span></a>
                         {% endif %}
                     </td>
                     <td><a href="/keywords/edit/{{ key.id }}" ><i class="bx bxs-pencil"></i></a></td>
