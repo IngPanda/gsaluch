@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from gsadashboard import views
-from gsadashboard.controllers import rfq_controller, vendor_controller, access_controller, user_controller, keywords_controller, comment_controller
+from gsadashboard.controllers import rfq_controller, vendor_controller, access_controller, user_controller, keywords_controller, comment_controller, address_controller
 
 
 urlpatterns = [
@@ -56,7 +56,11 @@ urlpatterns = [
     path('logout/', access_controller.signout, name='logout'),
 
     #comment
-    path('comment/', comment_controller.saveComment,name="createComment")
+    path('comment/', comment_controller.saveComment,name="createComment"),
+
+    #Search by address
+
+    path('addressRfq/',address_controller.rfqList, name='addressRfqs')
 
 ]
 

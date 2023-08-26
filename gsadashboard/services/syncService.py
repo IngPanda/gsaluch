@@ -383,3 +383,5 @@ def syncDetail(token, user,GSAID):
                 time = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 rfq = rfq,
                 user = user )
+    rfq.syncLuch = True
+    rfq.save()
