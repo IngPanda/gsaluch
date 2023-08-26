@@ -19,23 +19,15 @@
           <div class="col-auto">
             <select class="form-select" id="field" name="field" aria-label="Campo de busqueda">
               <option selected>Buscar por: </option>
-              <option value="id">ID-GSA</option>
-              <option value="title">Titulo</option>
-              <option value="description">Descripcion</option>
+              <option value="est">Siglas Estado</option>
+              <option value="city">Ciudad</option>
+              <option value="zip">Zip Code</option>
             </select>
           </div>
           <div class="col-auto">
-            <label for="inputPassword2" class="visually-hidden">Password</label>
             <input  class="form-control"  id="search" name="search"  placeholder="">
           </div>
-          <div class="col-auto">
-            <select class="form-select" name="wordSerach" aria-label="Default select example">
-              <option value="0" selected>Palabras clave predeterminadas</option>
-              {% for cat in keywords %}
-              <option value="{{ cat.id }}">{{ cat.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
+    
           <div class="col-auto">
             <button type="submit" class="btn btn-primary mb-3">Buscar</button>
           </div>
@@ -56,7 +48,6 @@
                 <tr>
                   <th scope="col">ID-GSA</th>
                   <th scope="col">Titulo</th>
-                  <th scope="col">Direccion</th>
                   <th scope="col">..</th>
                 </tr>
               </thead>
@@ -65,7 +56,6 @@
                 <tr>
                   <td scope="row">{{ rfq.idGSA}}</td>
                   <td>{{ rfq.title }}</td>
-                  <td>...</td>
                   <td><a href="/rfq_view/{{ rfq.id }}" >Ver</a></td>
                 </tr>
               {% endfor %}

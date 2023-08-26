@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from ..models import RFQModel,RFQKeyword, Keyword
+from ..models import Addresses, RFQModel,RFQKeyword, Keyword
 
 def getCategoryDist():
     categoriesList = list(Keyword.objects.all().values())
@@ -44,3 +44,26 @@ def searchService(search, field, wordSerach,ids,cat,rfqCat):
     paginator = Paginator(data, cantPage) 
     return paginator
 
+def searchByAddress(search, field):
+    baseQuery = Addresses.objects
+    cantPage = 10;
+    if search:
+        if field == 'est':
+            baseQuery = baseQuery.filter(state__contains=search)
+            cantPage = 100
+        elif field == 'city':
+            baseQuery = baseQuery.filter(city__contains=search)
+            cantPage = 100
+        elif field == 'state':
+            baseQuery = baseQuery.filter(zipCode__contains=search)
+            cantPage = 100
+        address = list(baseQuery.all().values())     
+        ids = [val['rfq_id'] for val in address]
+        print(search, field)
+        print(ids)
+        data = list(RFQModel.objects.filter(id__in=ids).all().values())
+    else:
+        data = list(RFQModel.objects.all().values())
+    
+    paginator = Paginator(data, cantPage) 
+    return paginator
