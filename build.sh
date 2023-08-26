@@ -7,4 +7,4 @@ pip install -r requirements.txt
 
 python manage.py migrate
 
-*/5  * * * * python .\gsadashboard\services\cron.py
+python .\gsadashboard\services\cron.py
