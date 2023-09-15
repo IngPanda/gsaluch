@@ -34,7 +34,7 @@ def sync_rfq(request):
             print('ERROR: ', error)
             return render(request, 'sync/sync.html', {
                'form': SyncRFQS(),
-                'errorData': "Error al sincronizar : " + error
+                'errorData': "Error al sincronizar : "
             })
 # RFQ table view controller    
 @login_required
