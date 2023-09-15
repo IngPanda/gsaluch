@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+
 from django.shortcuts import render, redirect, get_object_or_404
 from ..services.syncService import syncDataGeneral, syncByCategory, syncDetail
 from ..forms import SyncRFQS
@@ -7,32 +7,33 @@ from django.contrib.auth.models import User
 from ..services.listRfqService import searchService, setCategories
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 
 # Synchronizes all RFQS
 @login_required
 def sync_rfq(request):
+    userId = request.user.id
     if request.method == 'GET':
         return render(request, 'sync/sync.html', {
             'form': SyncRFQS()
         })
     else:
         try:
-            username = request.user.username
-            user = User.objects.get(username=username)
-            if request.POST['tokenGSA']:
-                syncDataGeneral(request.POST['tokenGSA'],user)
-                syncByCategory(request.POST['tokenGSA'])
-            else:
-                token = TokensGsa.objects.last()
-                syncDataGeneral(token.tokenGSA, user)
-                syncByCategory(token.tokenGSA)
+        
+       
+            token = TokensGsa.objects.last()
+        
+            syncDataGeneral(token.tokenGSA, userId)
+            syncByCategory(token.tokenGSA)
             return render(request, 'sync/sync.html', {
                 'form': SyncRFQS(),
                 'successData': "Informacion sincronizada con exito !!!"
             })
-        except:
+        
+        except Exception as error:
+            print('ERROR: ', error)
             return render(request, 'sync/sync.html', {
-                'form': SyncRFQS(),
+               'form': SyncRFQS(),
                 'errorData': "Error al sincronizar"
             })
 # RFQ table view controller    

@@ -195,7 +195,7 @@ def syncAdresses(adress,rfq):
             )
 def syncKeywordModel(rfqId,keywordId):
         try: 
-            modify = RFQKeyword.objects.get(keyword_id = keywordId, rfq_id = rfqId).value()
+            modify = RFQKeyword.objects.get(keyword_id = keywordId, rfq_id = rfqId)
         except ObjectDoesNotExist:
             modify = RFQKeyword.objects.create(
                 keyword_id= keywordId,
@@ -205,7 +205,7 @@ def syncKeywordModel(rfqId,keywordId):
 def mapRfqs(data, keywordId = 12):
     infoRfq = data['rfq']['rfqInfo']
     try:
-        user = UserOwner.objects.get(idGSA = data['userId']).value()
+        user = UserOwner.objects.get(idGSA = data['userId'])
         user.idGSA = data['userId']
         user.name = data['userName']
         user.agency = data['userAgency']
@@ -222,7 +222,7 @@ def mapRfqs(data, keywordId = 12):
         )
    
     try:
-        rfq = RFQModel.objects.get(idGSA = data['rfqId']).value()  
+        rfq = RFQModel.objects.get(idGSA = data['rfqId'])  
         #RFQ
         rfq.idGSA = data['rfqId']
         rfq.title = data['title']
@@ -318,7 +318,7 @@ def syncByCategory(token):
                 mapRfqs(rfq, seachId)
     
 
-def syncDataGeneral(token, user):
+def syncDataGeneral(token, userId):
     req = request.Request('https://www.ebuy.gsa.gov/ebuy/api/services/ebuyservices//seller/activerfqs/47QTCA22D003S')
     req.add_header('Content-Type', 'application/json')
     req.add_header('Authorization', 'Bearer '+token)
@@ -336,7 +336,7 @@ def syncDataGeneral(token, user):
     HistorySync.objects.create(
                 number = number_of_elements,
                 time = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                user = user
+                user_id = userId
     )
 
 def syncSingleCategory(token, keyword, keywordId, user):
