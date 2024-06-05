@@ -290,7 +290,7 @@ def mapRfqs(data, keywordId = 12):
             openRFC = infoRfq['rfqOpen']== 'true',
             userOwner = user
         )
- 
+    
     if data['rfq']['rfqQAAttachments']:
         syncAttachments(data['rfq']['rfqQAAttachments'],rfq)
     if data['rfq']['rfqModifications']:
@@ -311,8 +311,8 @@ def syncByCategory(token):
         data = data.encode()
         r = request.urlopen(req, data=data)
         text = r.read()
-        rfqJsons = json.loads(text.decode('utf-8'))['response']['47QTCA22D003S']
-
+        rfqJsons = json.loads(text.decode('utf-8'))['response']['rfqList']['47QTCA22D003S']
+        print(rfqJsons)
         if rfqJsons is not None:
             for rfq in rfqJsons:
                 mapRfqs(rfq, seachId)
