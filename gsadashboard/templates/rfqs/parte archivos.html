@@ -1,0 +1,24 @@
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Archivos Adjuntos</h5>
+
+            <table class="table table-striped table-hover">
+              <thead>
+                  <td>Nombre del documento</td>
+                  <td>Descargar</td>
+              </thead>
+              <tbody>
+                {% for att in atts %}
+                  <tr>
+                    <td>{{ att.docName }}</td>
+                    <td>    
+                      <a class="nav-link nav-icon" href="{{ att.docPath }}">
+                      <span class="badge bg-primary badge-number" >Descargar</span></a>
+                    </a><!-- End Notification Icon --></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+          </table>
+
+          </div>
+        </div>
